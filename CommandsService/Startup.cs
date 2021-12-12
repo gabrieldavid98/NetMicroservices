@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CommandsService.AsyncDataServices;
 using CommandsService.Data;
 using CommandsService.EventProcessing;
+using CommandsService.SyncDataServices.Grpc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -34,6 +35,7 @@ namespace CommandsService
             services.AddScoped<ICommandRepository, CommandRepository>();
             services.AddSingleton<IEventProcessor, EventProcessor>();
             services.AddHostedService<MessageBusSubscriber>();
+            services.AddScoped<IPlatformDataClient, PlatformDataClient>();
             
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -58,6 +60,8 @@ namespace CommandsService
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            
+            PrepDb.PrepPopulation(app);
         }
     }
 }
